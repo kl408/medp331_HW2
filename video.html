@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <title>MEDP 331 - Homework 2</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Homepage for homework 2" />
+      <meta name="author" content="Kristy" /> 
+      <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="intro">
+      <h1 id="buzz">buzz buzz</h1>
+      <p id="hover">Hover mouse below to the white area below.</a></p>
+      <p id="audio_button"><a href="audio.html" style="color: black;">Take me to the audio player ></a></p>
+    </div>
+    <div id="video-container">
+    
+      <video id="video" width="720" height="540">
+        <source src="bees_chocobo.mp4"  type=video/mp4> 
+      </video>
+
+      <!-- video controls, we'll use javascript to activate them
+      -->
+      <div id="video-controls">
+        <button type="button" id="play-pause" class="play">Play</button>
+        <button type="button" id="ff" class="fast_forward">>></button>
+        <button type="button" id="fast" class="x2">x2</button>
+        <button type="button" id="reverse" class="reverse">reverse</button>
+
+        <input type="range" id="seek-bar" value="0">
+        <button type="button" id="mute">Mute</button>
+        <input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
+        <button type="button" id="full-screen">Full-Screen</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

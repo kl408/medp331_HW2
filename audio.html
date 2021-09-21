@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MEDP 331 - Homework 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Audio player for homework 2" />
+    <meta name="author" content="Kristy" />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
+
+    <!-- Audio player styling -->
+    <style type="text/css">
+
+        /*Google Font*/
+        @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@100;200;300;400;500&display=swap');
+        
+        html {
+            height: 100%;
+            display: table;
+            margin: auto;
+        }
+      
+        body {
+            height: 100%;
+            display: table-cell;
+            vertical-align: middle;
+            /*background: yellow;*/
+            /*Background gradient*/
+            background: linear-gradient(-90deg, #E496AA, #A6488F, #542D60, #160B31, #A6488F, #E496AA);
+            background-size: 400% 400%;
+            animation: gradient 20s ease infinite;
+            font-family: 'Work Sans', sans-serif;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+      
+        .audio-player {
+            background: #12041C;
+            border: 1px solid #EEC2D7;
+            border-radius: 10px;
+            width: 50vw;
+            text-align: center;
+            display: flex;
+            flex-flow: row;
+            margin: 4rem 0 4rem 0;
+        }
+
+        .audio-player .album-image {
+            min-height: 110px;
+            width: 110px;
+            border-radius: 60px;
+            margin-top: 2vh;
+            margin-bottom: 2vh;
+            margin-right: 2vh;
+            margin-left: 2vh;
+            background-size: cover;
+        }
+
+        .audio-player .player-controls {
+            align-items: center;
+            justify-content: center;
+            margin-top: 2.5rem;
+            flex: 3;
+        }
+        .audio-player .player-controls progress {
+            width: 90%;
+        }
+        .audio-player .player-controls progress[value] {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: black;
+            color: pink;
+            height: 10px;
+        }
+        .audio-player .player-controls progress[value]::-webkit-progress-bar {
+            background-color: white;
+            border-radius: 3px;
+            border: 1px solid #dfdfdf;
+            color: pink;
+        }
+
+        /*Progress bar*/
+        .audio-player .player-controls progress::-webkit-progress-value {
+            background-color: #A6488F;
+        }
+        .audio-player .player-controls p {
+            color: #EEC2D7;
+            font-size: 1.6rem;
+        }
+        .audio-player #play-btn {
+            background-image: url("play-button.png");
+            background-size: cover;
+            width: 75px;
+            height: 75px;
+            margin: 3rem 0 2rem 2rem;
+        }
+        .audio-player #play-btn.pause {
+            background-image: url("pause.png");
+        }   
+    </style>
+
+  </head>
+
+  <body>
+        <!--<h1>Audio</h1>-->
+
+
+        <div class="audio-player">
+            <div id="play-btn"></div>
+             <div class="audio-wrapper" id="player-container" href="javascript:;">
+                <audio id="player" ontimeupdate="initProgressBar()">
+                    <source src="mili_milk.mp3" type="audio/mp3">
+                    <!--<source src="https://dl-web.dropbox.com/get/Oslo.mp3?_subject_uid=199049471&w=AABuDNt9BDJnaZOelVFws9FXTufkXCvAPS5SYpy_gRZ2GQ&duc_id=dropbox_duc_id" type="audio/mp3">-->
+                </audio>
+            </div>
+
+            <div class="player-controls scrubber">
+                <p>Mili - 奶水 (Milk) </p>
+                <span id="seekObjContainer">
+                    <progress id="seekObj" value="0" max="1"></progress>
+                </span>
+                <br>
+                <small style="float: left; position: relative; left: 15px; color: white;" class="start-time"></small>
+                <small style="float: right; position: relative; right: 20px; color: white;" class="end-time"></small>
+            </div>
+
+            <div class="album-image" style="background-image: url('https://static.wikia.nocookie.net/deemo/images/9/92/Milk.png/revision/latest?cb=20171021150601')"></div>
+        </div>
+
+
+        <script type="text/javascript">
+            function calculateTotalValue(length) {
+                var minutes = Math.floor(length / 60),
+                seconds_int = length - minutes * 60,
+                seconds_str = seconds_int.toString(),
+                seconds = seconds_str.substr(0, 2),
+                time = minutes + ':' + seconds
+            
+                return time;
+            }
+    
+            function calculateCurrentValue(currentTime) {
+                var current_hour = parseInt(currentTime / 3600) % 24,
+                current_minute = parseInt(currentTime / 60) % 60,
+                current_seconds_long = currentTime % 60,
+                current_seconds = current_seconds_long.toFixed(),
+                current_time = (current_minute < 10 ? "0" + current_minute : current_minute) + ":" + (current_seconds < 10 ? "0" + current_seconds : current_seconds);
+            
+                return current_time;
+            }
+    
+            function initProgressBar() {
+                var player = document.getElementById('player');
+                var length = player.duration
+                var current_time = player.currentTime;
+                
+                // calculate total length of value
+                var totalLength = calculateTotalValue(length)
+                jQuery(".end-time").html(totalLength);
+                
+                // calculate current value time
+                var currentTime = calculateCurrentValue(current_time);
+                jQuery(".start-time").html(currentTime);
+                
+                var progressbar = document.getElementById('seekObj');
+                progressbar.value = (player.currentTime / player.duration);
+                progressbar.addEventListener("click", seek);
+                
+                if (player.currentTime == player.duration) {
+                    $('#play-btn').removeClass('pause');
+                }
+    
+                function seek(evt) {
+                    var percent = evt.offsetX / this.offsetWidth;
+                    player.currentTime = percent * player.duration;
+                    progressbar.value = percent / 100;
+                }
+            };
+    
+            function initPlayers(num) {
+                // pass num in if there are multiple audio players e.g 'player' + i
+                
+                for (var i = 0; i < num; i++) {
+                    (function() {
+                
+                    // Variables
+                    // ----------------------------------------------------------
+                    // audio embed object
+                    var playerContainer = document.getElementById('player-container'),
+                        player = document.getElementById('player'),
+                        isPlaying = false,
+                        playBtn = document.getElementById('play-btn');
+                
+                    // Controls Listeners
+                    // ----------------------------------------------------------
+                    if (playBtn != null) {
+                        playBtn.addEventListener('click', function() {
+                        togglePlay()
+                        });
+                    }
+                
+                    // Controls & Sounds Methods
+                    // ----------------------------------------------------------
+                    function togglePlay() {
+                        if (player.paused === false) {
+                        player.pause();
+                        isPlaying = false;
+                        $('#play-btn').removeClass('pause');
+                
+                        } else {
+                        player.play();
+                        $('#play-btn').addClass('pause');
+                        isPlaying = true;
+                        }
+                    }
+                    }());
+                }
+            }
+    
+            initPlayers(jQuery('#player-container').length);
+            
+        </script>
+
+        <p><a href="video.html" style="color: white;">Take me to the video player ></a></p>
+  </body>
+</html>
